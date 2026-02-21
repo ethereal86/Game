@@ -32,7 +32,9 @@ Window::Window(int width, int height, const wchar_t* title) {
 
 Window::~Window() {
     UnregisterClass(s_className, m_hInstance);
-    DestroyWindow(m_hWnd);
+    
+    if (m_hWnd)
+        DestroyWindow(m_hWnd);
 }
 
 bool Window::ProcessMessages() const {

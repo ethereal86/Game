@@ -4,31 +4,24 @@
 #include <iostream>
 
 Device::Device() {
-    InitDebugLayer();
-    CreateFactory();
-    SelectAdapter();
+    UINT flags = 0;
 
-    if (FAILED(D3D12CreateDevice(m_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
-        throw std::runtime_error("Failed to create D3D12 Device");
-}
-
-void Device::InitDebugLayer() const {
 #if defined(_DEBUG)
     ComPtr<ID3D12Debug> debugController;
     if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
         debugController->EnableDebugLayer();
-#endif
-}
 
-void Device::CreateFactory() {
-    UINT flags = 0;
-
-#if defined(_DEBUG)
     flags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
 
     if (FAILED(CreateDXGIFactory2(flags, IID_PPV_ARGS(&m_factory))))
         throw std::runtime_error("Failed to create DXGI Factory");
+
+    SelectAdapter();
+    PrintAdapterInfo();
+
+    if (FAILED(D3D12CreateDevice(m_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
+        throw std::runtime_error("Failed to create D3D12 Device");
 }
 
 void Device::SelectAdapter() {
@@ -51,7 +44,6 @@ void Device::SelectAdapter() {
         throw std::runtime_error("No compatible hardware found to run DirectX 12");
 
     m_adapter = bestAdapter;
-    PrintAdapterInfo();
 }
 
 void Device::PrintAdapterInfo() const {

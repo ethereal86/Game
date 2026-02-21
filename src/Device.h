@@ -12,12 +12,13 @@ public:
     Device();
     ~Device() = default;
 
-    ID3D12Device* Get() const { return m_device.Get(); }
-    IDXGIFactory6* GetFactory() const { return m_factory.Get(); }
-    IDXGIAdapter1* GetAdapter() const { return m_adapter.Get(); }
+    Device(const Device&) = delete;
+    Device& operator=(const Device&) = delete;
+
+    inline ID3D12Device* Get() const { return m_device.Get(); }
+    inline IDXGIFactory6* GetFactory() const { return m_factory.Get(); }
+    inline IDXGIAdapter1* GetAdapter() const { return m_adapter.Get(); }
 private:
-    void InitDebugLayer() const;
-    void CreateFactory();
     void SelectAdapter();
     void PrintAdapterInfo() const;
 private:
