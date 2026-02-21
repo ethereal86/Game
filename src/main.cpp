@@ -1,8 +1,9 @@
 #include <cstdio>
+#include "window.h"
 
 int main(int argc, char* argv[]) {
-    printf("Hello, world!\n");
-    printf("This is a game created by Colin!\n");
-    while (true);
+    Window window(1200, 900, "Game");
+    printf("Win32 window initialized\n");
+    while (window.ProcessMessages());
     return 0;
 }
