@@ -4,7 +4,7 @@
 
 class Window {
 public:
-    Window(int width, int height, const char* title);
+    Window(int width, int height, const wchar_t* title);
     ~Window();
 
     Window(const Window&) = delete;
@@ -14,7 +14,7 @@ public:
 private:
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 private:
-    static constexpr char s_className[] = "GameWindow";
+    static constexpr wchar_t s_className[] = L"GameWindow";
 
     HWND m_hWnd;
     HINSTANCE m_hInstance;

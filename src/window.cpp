@@ -1,6 +1,8 @@
-#include "window.h"
+#include "Window.h"
 
-Window::Window(int width, int height, const char* title) {
+#include <stdexcept>
+
+Window::Window(int width, int height, const wchar_t* title) {
     m_hInstance = GetModuleHandle(nullptr);
 
     WNDCLASS wc = {};
@@ -12,7 +14,8 @@ Window::Window(int width, int height, const char* title) {
     wc.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
     wc.lpszClassName = s_className;
 
-    RegisterClass(&wc);
+    if (!RegisterClass(&wc))
+        throw std::runtime_error("Failed to register window class");
 
     m_hWnd = CreateWindowEx(
         0, s_className, title, 
@@ -20,6 +23,9 @@ Window::Window(int width, int height, const char* title) {
         CW_USEDEFAULT, CW_USEDEFAULT,
         width, height,
         nullptr, nullptr, m_hInstance, nullptr);
+
+    if (!m_hWnd)
+        throw std::runtime_error("Failed to create window");
 
     ShowWindow(m_hWnd, SW_SHOW);
 }
