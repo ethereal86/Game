@@ -1,7 +1,5 @@
+#include <pch.h>
 #include "Device.h"
-
-#include <stdexcept>
-#include <iostream>
 
 Device::Device() {
     UINT flags = 0;
@@ -15,41 +13,48 @@ Device::Device() {
 #endif
 
     if (FAILED(CreateDXGIFactory2(flags, IID_PPV_ARGS(&m_factory))))
-        throw std::runtime_error("Failed to create DXGI Factory");
+        throw std::runtime_error("Failed to create DXGI factory.");
 
-    SelectAdapter();
-    PrintAdapterInfo();
+    ComPtr<IDXGIAdapter1> adapter = SelectAdapter(m_factory);
+    if (!adapter)
+        throw std::runtime_error("No compatible hardware adapter found.");
+    
+    if (FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
+        throw std::runtime_error("Failed to create D3D12 device.");
 
-    if (FAILED(D3D12CreateDevice(m_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
-        throw std::runtime_error("Failed to create D3D12 Device");
+    PrintAdapterInfo(adapter);
 }
 
-void Device::SelectAdapter() {
+ComPtr<IDXGIAdapter1> Device::SelectAdapter(const ComPtr<IDXGIFactory6>& factory) const {
     ComPtr<IDXGIAdapter1> bestAdapter;
     SIZE_T maxDedicatedVideoMemory = 0;
 
-    for (UINT i = 0; m_factory->EnumAdapters1(i, &m_adapter) != DXGI_ERROR_NOT_FOUND; i++) {
+    for (UINT i = 0;; ++i) {
+        ComPtr<IDXGIAdapter1> adapter;
+        if(factory->EnumAdapters1(i, &adapter) == DXGI_ERROR_NOT_FOUND)
+            break;
+
         DXGI_ADAPTER_DESC1 desc;
-        m_adapter->GetDesc1(&desc);
+        adapter->GetDesc1(&desc);
 
         if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
             continue;
 
+        if (FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr)))
+            continue;
+
         if (desc.DedicatedVideoMemory > maxDedicatedVideoMemory) {
             maxDedicatedVideoMemory = desc.DedicatedVideoMemory;
-            bestAdapter = m_adapter;
+            bestAdapter = adapter;
         }
     }
-    if (!bestAdapter)
-        throw std::runtime_error("No compatible hardware found to run DirectX 12");
-
-    m_adapter = bestAdapter;
+    return bestAdapter;
 }
 
-void Device::PrintAdapterInfo() const {
+void Device::PrintAdapterInfo(const ComPtr<IDXGIAdapter1>& adapter) const {
 #if defined(_DEBUG)
     DXGI_ADAPTER_DESC1 desc;
-    m_adapter->GetDesc1(&desc);
+    adapter->GetDesc1(&desc);
 
     std::wcout << "=================================================" << std::endl;
     std::wcout << "                Selected Hardware                " << std::endl;
