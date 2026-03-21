@@ -1,6 +1,10 @@
 #pragma once
 
-class Window {
+/* Window */
+/* Wraps a Win32 window (HWND) */
+/* Handles window creation and message processing */
+class Window 
+{
 public:
     Window(int width, int height, const wchar_t* title);
     ~Window();
@@ -8,17 +12,16 @@ public:
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
 
-    HWND Get() const { return m_hWnd; }
-
     bool ProcessMessages() const;
     void Show() const;
 
-private:
-    static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    LRESULT HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+    inline HWND Get() const { return m_hWnd; }
     
 private:
-    static constexpr wchar_t s_className[] = L"GameWindow";
-
-    HWND m_hWnd;
+    static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    
+private:
+    static constexpr wchar_t WindowClassName[] = L"GameWindow";
+    
+    HWND m_hWnd = nullptr;
 };
