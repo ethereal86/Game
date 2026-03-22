@@ -1,8 +1,6 @@
 #include <pch.h>
 #include "Device.h"
 
-#include "Core/Assert.h"
-
 Device::Device() 
 {
     UINT flags = 0;

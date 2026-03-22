@@ -2,7 +2,6 @@
 
 #include "Device.h"
 
-/* CommandQueue */
 /* Wraps a command queue (ID3D12CommandQueue) and fence (ID3D12Fence) */
 /* Submits recorded command lists to the GPU for execution and owns a fence for CPU/GPU synchronization */
 class CommandQueue
@@ -13,6 +12,9 @@ public:
 
     CommandQueue(const CommandQueue&) = delete;
     CommandQueue& operator=(const CommandQueue&) = delete;
+
+    CommandQueue(CommandQueue&&) = delete;
+    CommandQueue& operator=(CommandQueue&&) = delete;
     
     void Execute(ID3D12GraphicsCommandList* list) const;
     UINT64 Signal();

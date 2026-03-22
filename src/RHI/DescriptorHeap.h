@@ -2,7 +2,6 @@
 
 #include "Device.h"
 
-/* DescriptorHeap */
 /* Wraps a descriptor heap (ID3D12DescriptorHeap) */
 /* Manages CPU/GPU descriptor handles with a simple linear allocator */
 class DescriptorHeap
@@ -12,6 +11,9 @@ public:
 
     DescriptorHeap(const DescriptorHeap&) = delete;
     DescriptorHeap& operator=(const DescriptorHeap&) = delete;
+
+    DescriptorHeap(DescriptorHeap&&) = delete;
+    DescriptorHeap& operator=(DescriptorHeap&&) = delete;
 
     D3D12_CPU_DESCRIPTOR_HANDLE Allocate();
     

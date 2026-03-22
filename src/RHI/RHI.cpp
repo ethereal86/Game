@@ -4,12 +4,11 @@
 RHI::RHI(HWND hWnd, UINT width, UINT height)
     : m_graphicsQueue(m_device)
     , m_rtvHeap(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, RtvHeapCapacity)
-    , m_swapChain(m_device, m_graphicsQueue, m_rtvHeap, hWnd, width, height, FrameCount, BackBufferFormat)
-    , m_rootSignature(m_device)
+    , m_swapChain(m_device, m_graphicsQueue, m_rtvHeap, hWnd, width, height)
     , m_width(width)
     , m_height(height)
 {
-    for (UINT i = 0; i < FrameCount; ++i)
+    for (UINT i = 0; i < SwapChain::BackBufferCount; ++i)
     {
         DX12_CHECK(
             m_device.Get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_frameContexts[i].allocator)), 
@@ -52,7 +51,7 @@ void RHI::EndFrame(bool vsync)
     m_swapChain.Present(vsync);
 
     m_frameContexts[m_frameIndex].fenceValue = m_graphicsQueue.Signal();
-    m_frameIndex = (m_frameIndex + 1) % FrameCount;
+    m_frameIndex = (m_frameIndex + 1) % SwapChain::BackBufferCount;
 }
 
 void RHI::Flush()
@@ -60,17 +59,66 @@ void RHI::Flush()
     m_graphicsQueue.Flush();
 }
 
-void RHI::ClearRenderTarget(const FLOAT color[4])
+RootSignature RHI::CreateRootSignature() const
+{
+    return RootSignature(m_device);
+}
+
+PipelineState RHI::CreatePipelineState(const PipelineDesc& desc) const
+{
+    return PipelineState(m_device, desc);
+}
+
+VertexBuffer RHI::CreateVertexBuffer(const void* data, UINT size, UINT stride) const
+{
+    return VertexBuffer(m_device, data, size, stride);
+}
+
+IndexBuffer RHI::CreateIndexBuffer(const uint16_t* data, UINT size) const
+{
+    return IndexBuffer(m_device, data, size);
+}
+
+void RHI::ClearRenderTarget(const FLOAT color[4]) const
 {
     const SwapChain::BackBuffer& backBuffer = m_swapChain.GetCurrentBackBuffer();
     m_commandList->OMSetRenderTargets(1, &backBuffer.rtv, FALSE, nullptr);
     m_commandList->ClearRenderTargetView(backBuffer.rtv, color, 0, nullptr);
 }
 
-PipelineState& RHI::CreatePipelineState(const Shader& vertexShader, const Shader& pixelShader)
+void RHI::SetRootSignature(const RootSignature& rootSignature) const
 {
-    m_pipelineStates.emplace_back(m_device, m_rootSignature, vertexShader, pixelShader, BackBufferFormat);
-    return m_pipelineStates.back();
+    m_commandList->SetGraphicsRootSignature(rootSignature.Get());
+}
+
+void RHI::SetPipelineState(const PipelineState& pipelineState) const
+{
+    m_commandList->SetPipelineState(pipelineState.Get());
+}
+
+void RHI::SetVertexBuffer(const VertexBuffer& vertexBuffer) const
+{
+    m_commandList->IASetVertexBuffers(0, 1, &vertexBuffer.GetView());
+}
+
+void RHI::SetIndexBuffer(const IndexBuffer& indexBuffer) const
+{
+    m_commandList->IASetIndexBuffer(&indexBuffer.GetView());
+}
+
+void RHI::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const
+{
+    m_commandList->IASetPrimitiveTopology(topology);
+}
+
+void RHI::Draw(UINT vertexCount, UINT instanceCount, UINT startVertex, UINT startInstance) const
+{
+    m_commandList->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+}
+
+void RHI::DrawIndexed(UINT indexCount, UINT instanceCount, UINT startVertex, INT baseVertex, UINT startInstance) const
+{
+    m_commandList->DrawIndexedInstanced(indexCount, instanceCount, startVertex, baseVertex, startInstance);
 }
 
 void RHI::TransitionResource(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter) const

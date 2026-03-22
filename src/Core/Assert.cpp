@@ -1,5 +1,4 @@
 #include <pch.h>
-#include "Assert.h"
 
 static const char* GetDX12ErrorString(HRESULT hr)
 {

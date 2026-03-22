@@ -1,17 +1,18 @@
 #include <pch.h>
 #include "PipelineState.h"
 
-#include "Core/Assert.h"
+#include "SwapChain.h"
 
-PipelineState::PipelineState(const Device& device, const RootSignature& rootSignature, const Shader& vertexShader, const Shader& pixelShader, DXGI_FORMAT rtvFormat)
+PipelineState::PipelineState(const Device& device, const PipelineDesc& pipelineDesc)
 {
-    ASSERT(vertexShader.IsLoaded(), "Missing vertex shader bytecode");
-    ASSERT(pixelShader.IsLoaded(), "Missing pixel shader bytecode");
+    ASSERT(pipelineDesc.rootSignature != nullptr, "PipelineState requires a valid root signature");
+    ASSERT(pipelineDesc.vertexShader != nullptr, "PipelineState requires a vertex shader");
+    ASSERT(pipelineDesc.pixelShader != nullptr, "PipelineState requires a pixel shader");
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-    desc.pRootSignature = rootSignature.Get();
-    desc.VS = vertexShader.GetBytecode();
-    desc.PS = pixelShader.GetBytecode();
+    desc.pRootSignature = pipelineDesc.rootSignature->Get();
+    desc.VS = pipelineDesc.vertexShader->GetBytecode();
+    desc.PS = pipelineDesc.pixelShader->GetBytecode();
 
     D3D12_BLEND_DESC blend = {};
     blend.AlphaToCoverageEnable = FALSE;
@@ -39,10 +40,10 @@ PipelineState::PipelineState(const Device& device, const RootSignature& rootSign
     depthStencil.StencilEnable = FALSE;
 
     desc.DepthStencilState = depthStencil;
-    desc.InputLayout = {nullptr, 0};
+    desc.InputLayout = pipelineDesc.inputLayout;
     desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     desc.NumRenderTargets = 1;
-    desc.RTVFormats[0] = rtvFormat;
+    desc.RTVFormats[0] = SwapChain::BackBufferFormat;
 
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;

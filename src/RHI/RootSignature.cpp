@@ -1,8 +1,6 @@
 #include <pch.h>
 #include "RootSignature.h"
 
-#include "Core/Assert.h"
-
 RootSignature::RootSignature(const Device& device) 
 {
     D3D12_ROOT_SIGNATURE_DESC desc = {};

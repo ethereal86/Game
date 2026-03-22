@@ -1,8 +1,6 @@
 #include <pch.h>
 #include "CommandQueue.h"
 
-#include "Core/Assert.h"
-
 CommandQueue::CommandQueue(const Device& device)
 {
     D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -34,7 +32,7 @@ CommandQueue::~CommandQueue()
 
 void CommandQueue::Execute(ID3D12GraphicsCommandList* list) const
 {
-    ASSERT(list != nullptr, "Command list is null");
+    ASSERT(list != nullptr, "Command list cannot be null");
 
     ID3D12CommandList* lists[] = {list};
     m_queue->ExecuteCommandLists(1, lists);

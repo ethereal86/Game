@@ -1,20 +1,20 @@
 #include <pch.h>
 #include "SwapChain.h"
 
-SwapChain::SwapChain(const Device& device, const CommandQueue& queue, DescriptorHeap& rtvHeap, HWND hWnd, UINT width, UINT height, UINT bufferCount, DXGI_FORMAT format)
-    : m_format(format)
+SwapChain::SwapChain(const Device& device, const CommandQueue& queue, DescriptorHeap& rtvHeap, HWND hWnd, UINT width, UINT height)
 {
-    ASSERT(bufferCount <= MaxBufferCount, "Swap chain buffer count exceeds maximum");
+    ASSERT(width > 0, "SwapChain width must be greater than zero");
+    ASSERT(height > 0, "SwapChain height must be greater than zero");
 
     DXGI_SWAP_CHAIN_DESC1 desc = {};
     desc.Width = width;
     desc.Height = height;
-    desc.Format = format;
+    desc.Format = BackBufferFormat;
     desc.Stereo = FALSE;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    desc.BufferCount = bufferCount;
+    desc.BufferCount = BackBufferCount;
     desc.Scaling = DXGI_SCALING_NONE;
     desc.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
@@ -35,7 +35,7 @@ SwapChain::SwapChain(const Device& device, const CommandQueue& queue, Descriptor
         "Failed to query IDXGISwapChain3"
     );
 
-    CreateRTVs(device, rtvHeap, bufferCount);
+    CreateRTVs(device, rtvHeap);
 }
 
 void SwapChain::Present(bool vsync)
@@ -49,13 +49,13 @@ void SwapChain::Present(bool vsync)
     );
 }
 
-void SwapChain::CreateRTVs(const Device& device, DescriptorHeap& rtvHeap, UINT bufferCount)
+void SwapChain::CreateRTVs(const Device& device, DescriptorHeap& rtvHeap)
 {
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-    rtvDesc.Format = m_format;
+    rtvDesc.Format = BackBufferFormat;
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
-    for (UINT i = 0; i < bufferCount; ++i)
+    for (UINT i = 0; i < BackBufferCount; ++i)
     {
         DX12_CHECK(
             m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffers[i].resource)),

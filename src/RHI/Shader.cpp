@@ -1,8 +1,6 @@
 #include <pch.h>
 #include "Shader.h"
 
-#include "Core/Assert.h"
-
 Shader::Shader(const std::string& filename)
 {
     char exePath[MAX_PATH];
@@ -37,7 +35,7 @@ Shader::Shader(const std::string& filename)
 
 D3D12_SHADER_BYTECODE Shader::GetBytecode() const
 {
-    ASSERT(IsLoaded(), "Shader was not loaded successfully");
+    ASSERT(!m_bytecode.empty(), "Shader was not loaded successfully");
 
     D3D12_SHADER_BYTECODE bytecode = {};
     bytecode.pShaderBytecode = m_bytecode.data();

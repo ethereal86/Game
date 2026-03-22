@@ -3,6 +3,9 @@
 #include "Platform/Window.h"
 #include "Renderer/Renderer.h"
 
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 900
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     UNREFERENCED_PARAMETER(hInstance);
@@ -10,8 +13,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     UNREFERENCED_PARAMETER(lpCmdLine);
     UNREFERENCED_PARAMETER(nShowCmd);
 
-    Window window(1200, 900, L"Game");
-    RHI rhi(window.Get(), 1200, 900);
+    Window window(WINDOW_WIDTH, WINDOW_HEIGHT, L"Game");
+    RHI rhi(window.Get(), window.GetWidth(), window.GetHeight());
     Renderer renderer(rhi);
 
     window.Show();
@@ -22,9 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (!window.ProcessMessages())
             running = false;
 
-        renderer.BeginFrame();
         renderer.Render();
-        renderer.EndFrame();
     }
     rhi.Flush();
 

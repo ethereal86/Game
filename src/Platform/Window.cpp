@@ -1,16 +1,19 @@
 #include <pch.h>
 #include "Window.h"
 
-#include "Core/Assert.h"
-
 Window::Window(int width, int height, const wchar_t* title)
+    : m_width(width), m_height(height)
 {
+    ASSERT(width > 0, "Window width must be greater than zero");
+    ASSERT(height > 0, "Window height must be greater than zero");
+    ASSERT(title != nullptr, "Window title cannot be null");
+
     WNDCLASSEX wc = {};
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.lpfnWndProc = WndProc;
     wc.hInstance = GetModuleHandle(nullptr);
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpszClassName = WindowClassName;
+    wc.lpszClassName = ClassName;
 
     WIN32_CHECK(RegisterClassEx(&wc), "Failed to register window class");
 
@@ -20,7 +23,7 @@ Window::Window(int width, int height, const wchar_t* title)
 
     m_hWnd = CreateWindowEx(
         0,
-        WindowClassName,
+        ClassName,
         title,
         style,
         CW_USEDEFAULT, CW_USEDEFAULT,

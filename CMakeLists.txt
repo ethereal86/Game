@@ -9,7 +9,7 @@ endif()
 # Default to Debug if no build type is specified (for single-config generators)
 if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
-    message(STATUS "No build type specified — defaulting to Debug.")
+    message(STATUS "No build type specified - defaulting to Debug.")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)

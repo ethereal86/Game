@@ -1,6 +1,5 @@
 #pragma once
 
-/* Device */
 /* Wraps a DirectX 12 graphics device (ID3D12Device) */
 /* Represents the GPU and responsible for creating GPU resources and objects */
 class Device 
@@ -10,6 +9,9 @@ public:
 
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
+
+    Device(Device&&) = delete;
+    Device& operator=(Device&&) = delete;
 
     inline ID3D12Device* Get() const { return m_device.Get(); }
     inline IDXGIFactory4* GetFactory() const { return m_factory.Get(); }

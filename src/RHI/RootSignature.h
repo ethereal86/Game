@@ -2,7 +2,6 @@
 
 #include "Device.h"
 
-/* RootSignature */
 /* Wraps a root signature (ID3D12RootSignature) */
 /* Defines what resources a shader can access */
 class RootSignature
@@ -12,6 +11,9 @@ public:
 
     RootSignature(const RootSignature&) = delete;
     RootSignature& operator=(const RootSignature&) = delete;
+
+    RootSignature(RootSignature&&) = delete;
+    RootSignature& operator=(RootSignature&&) = delete;
 
     inline ID3D12RootSignature* Get() const { return m_rootSignature.Get(); }
 
