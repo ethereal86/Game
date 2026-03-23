@@ -6,10 +6,9 @@ if(NOT WIN32)
     message(FATAL_ERROR "This project only supports Windows for now.")
 endif()
 
-# Default to Debug if no build type is specified (for single-config generators)
-if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
-    message(STATUS "No build type specified - defaulting to Debug.")
+# Ensure the compiler is MSVC
+if (NOT MSVC)
+    message(FATAL_ERROR "This project only supports MSVC for now.")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -23,8 +22,6 @@ file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS src/*.h)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
-
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.h)
 
@@ -36,34 +33,26 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:_DEBUG>
 )
 
-# Warning and optimization flags for different compilers
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        /W4
-        /permissive-
+target_compile_options(${PROJECT_NAME} PRIVATE
+    /W4
+    /permissive-
 
-        $<$<CONFIG:Debug>:/Od;/Zi;/RTC1>
-        $<$<CONFIG:Release>:/O2;/GL>
-    )
-    target_link_options(${PROJECT_NAME} PRIVATE
-        $<$<CONFIG:Release>:/LTCG>
-    )
-else()
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
+    $<$<CONFIG:Debug>:/Od;/Zi;/RTC1>
+    $<$<CONFIG:Release>:/O2;/GL>
+)
 
-        $<$<CONFIG:Debug>:-O0;-g>
-        $<$<CONFIG:Release>:-O3>
-    )
-endif()
+target_link_options(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:Debug>:/DEBUG>
+    $<$<CONFIG:Release>:/LTCG>
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     d3d12
     dxgi
     dxguid
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE ON)
 
 # ---------------------------------------------------------------------------------------
 #                                  Shader Compilation

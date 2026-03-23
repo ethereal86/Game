@@ -49,7 +49,7 @@ void GetWin32ErrorDesc(DWORD error, char* buffer, size_t bufSize)
         error,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         buffer,
-        bufSize,
+        static_cast<DWORD>(bufSize),
         nullptr
     );
 

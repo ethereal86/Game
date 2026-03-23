@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "RHI/Core/Device.h"
 
 /* Holds vertex data on the GPU */
 class VertexBuffer

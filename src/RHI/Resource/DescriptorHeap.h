@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "RHI/Core/Device.h"
 
 /* Wraps a descriptor heap (ID3D12DescriptorHeap) */
 /* Manages CPU/GPU descriptor handles with a simple linear allocator */

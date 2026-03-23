@@ -1,9 +1,12 @@
 #pragma once
 
-#include "SwapChain.h"
-#include "PipelineState.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
+#include "Core/SwapChain.h"
+
+#include "Pipeline/PipelineState.h"
+
+#include "Resource/VertexBuffer.h"
+#include "Resource/IndexBuffer.h"
+#include "Resource/ConstantBuffer.h"
 
 /* Abstraction layer that sits between the renderer and DirectX */
 /* Owns all frame-level GPU resources eand manages low-level GPU interaction */
@@ -28,12 +31,14 @@ public:
     PipelineState CreatePipelineState(const PipelineDesc& desc) const;
     VertexBuffer CreateVertexBuffer(const void* data, UINT size, UINT stride) const;
     IndexBuffer CreateIndexBuffer(const uint16_t* data, UINT size) const;
+    ConstantBuffer CreateConstantBuffer(UINT size) const;
     
     void ClearRenderTarget(const FLOAT color[4]) const;
     void SetRootSignature(const RootSignature& rootSignature) const;
     void SetPipelineState(const PipelineState& pipelineState) const;
     void SetVertexBuffer(const VertexBuffer& vertexBuffer) const;
     void SetIndexBuffer(const IndexBuffer& indexBuffer) const;
+    void SetConstantBuffer(const ConstantBuffer& constantBuffer, UINT rootIndex) const;
     void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const;
     void Draw(UINT vertexCount, UINT instanceCount = 1, UINT startVertex = 0, UINT startInstance = 0) const;
     void DrawIndexed(UINT indexCount, UINT instanceCount = 1, UINT startVertex = 0, INT baseVertex = 0, UINT startInstance = 0) const;
@@ -50,6 +55,7 @@ private:
         UINT64 fenceValue = 0;
     };
 
+private:
     static constexpr UINT RtvHeapCapacity = 16;
 
     Device m_device;

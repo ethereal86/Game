@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "RHI/Core/Device.h"
 
 /* Wraps a root signature (ID3D12RootSignature) */
 /* Defines what resources a shader can access */

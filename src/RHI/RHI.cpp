@@ -79,6 +79,11 @@ IndexBuffer RHI::CreateIndexBuffer(const uint16_t* data, UINT size) const
     return IndexBuffer(m_device, data, size);
 }
 
+ConstantBuffer RHI::CreateConstantBuffer(UINT size) const
+{
+    return ConstantBuffer(m_device, size);
+}
+
 void RHI::ClearRenderTarget(const FLOAT color[4]) const
 {
     const SwapChain::BackBuffer& backBuffer = m_swapChain.GetCurrentBackBuffer();
@@ -104,6 +109,11 @@ void RHI::SetVertexBuffer(const VertexBuffer& vertexBuffer) const
 void RHI::SetIndexBuffer(const IndexBuffer& indexBuffer) const
 {
     m_commandList->IASetIndexBuffer(&indexBuffer.GetView());
+}
+
+void RHI::SetConstantBuffer(const ConstantBuffer& constantBuffer, UINT rootIndex) const
+{
+    m_commandList->SetGraphicsRootConstantBufferView(rootIndex, constantBuffer.GetGPUAddress());
 }
 
 void RHI::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology) const

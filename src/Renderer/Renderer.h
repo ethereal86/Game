@@ -15,7 +15,14 @@ public:
     Renderer(Renderer&&) = delete;
     Renderer& operator=(Renderer&&) = delete;
 
-    void Render() const;
+    void Render();
+
+private:
+    /* Block of data that gets uploaded to the constant buffer */
+    struct CBuffer
+    {
+        DirectX::XMFLOAT4X4 modelMatrix;
+    };
 
 private:
     RHI& m_rhi;
@@ -25,4 +32,7 @@ private:
 
     std::optional<VertexBuffer> m_vertexBuffer;
     std::optional<IndexBuffer> m_indexBuffer;
+    std::optional<ConstantBuffer> m_constantBuffer;
+
+    UINT m_frameCount = 0;
 };

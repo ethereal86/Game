@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CommandQueue.h"
-#include "DescriptorHeap.h"
+#include "RHI/Resource/DescriptorHeap.h"
 
 /* Wraps a swap chain (IDXGISwapChain3) */
 /* Manages back buffer rendering and presentation to the window */
@@ -15,9 +15,11 @@ public:
         D3D12_CPU_DESCRIPTOR_HANDLE rtv;
     };
 
+public:
     static constexpr UINT BackBufferCount = 2;
     static constexpr DXGI_FORMAT BackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
+public:
     SwapChain(const Device& device, const CommandQueue& queue, DescriptorHeap& rtvHeap, HWND hWnd, UINT width, UINT height);
 
     SwapChain(const SwapChain&) = delete;

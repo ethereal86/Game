@@ -1,7 +1,7 @@
 #include <pch.h>
 #include "PipelineState.h"
 
-#include "SwapChain.h"
+#include "RHI/Core/SwapChain.h"
 
 PipelineState::PipelineState(const Device& device, const PipelineDesc& pipelineDesc)
 {
